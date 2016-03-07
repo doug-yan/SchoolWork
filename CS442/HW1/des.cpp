@@ -5,6 +5,7 @@
 using namespace std;
 
 void initPermutation(int input[], int output[]);
+void getSubkeys(int originalKey[], int subkeys[][48]);
 void permutationChoice1(int input[], int output[]);
 void splitPlaintext(int input[], int left[], int right[]);
 void finalPermutation(int input[], int output[]);
@@ -12,23 +13,19 @@ void finalPermutation(int input[], int output[]);
 int main(){
   int plaintextBinary[64];
   int initPlainTextPermutation[64];
-  int keyBinary[64];
+  int keyBinary[64] = {0,0,0,1,0,0,1,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,1,0,1,1,1,1,0,0,1,1,0,0,1,1,0,1,1,1,0,1,1,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,1,0,0,0,1};
   int keyPlus[56];
+  int subKeys[16][48];
   
   //Perform initial Permuation
   initPermutation(plaintextBinary, initPlainTextPermutation);
   
   //Get subkeys
-    //Perform permutation choice 1
-    permutationChoice1(keyBinary, keyPlus);
-      
-    //Split into C0 and D0
-    
-    //Perform shifts
-    
-    //Concatenate and perform permutation choice 2
+  getSubkeys(keyBinary, subKeys);
   
   //Encode block
+  
+  //Perform final permutation
   
   return 0;
 }
@@ -53,6 +50,16 @@ void initPermutation(int input[], int output[]) {
       k+=58;
   }
   
+}
+
+void getSubkeys(int originalKey[], int subkeys[][48]) {
+  int kplus[56];
+  int c0[28];
+  int d0[28];
+  int leftsubkeys[16][28];
+  int rightsubkeys[16][28];
+  
+  permutationChoice1(originalKey, kplus);
 }
 
 void permutationChoice1(int input[], int output[]){
