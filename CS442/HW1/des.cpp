@@ -1,9 +1,9 @@
 #include <iostream>
-#include <bitset>
 #include <string>
 
 using namespace std;
 
+void putInArray(string message, string key, int messageArr[], int keyArr[]);
 void initPermutation(int input[], int output[]);
 void getSubkeys(int originalKey[], int subkeys[][48]);
 void permutationChoice1(int input[], int output[]);
@@ -26,12 +26,24 @@ void finalPermutation(int input[], int output[]);
 
 
 int main(){
-  int plaintextBinary[64] = {0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,0,0,1,1,1,1,0,0,0,1,0,0,1,1,0,1,0,1,0,1,1,1,1,0,0,1,1,0,1,1,1,1,0,1,1,1,1,};
+  string messagebin, keybin;
+  int plaintextBinary[64];
   int initPlainTextPermutation[64];
-  int keyBinary[64] = {0,0,0,1,0,0,1,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,1,0,1,1,1,1,0,0,1,1,0,0,1,1,0,1,1,1,0,1,1,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,1,0,0,0,1};
+  int keyBinary[64];
   int subKeys[16][48];
   int encodedBlock[64];
   int finalcipher[64];
+  
+  //Get data:
+  cout << "Enter plaintext in binary: ";
+  ws(cin);
+  getline(cin, messagebin);
+  
+  cout << "Enter key in binary: ";
+  ws(cin);
+  getline(cin, keybin);
+  
+  putInArray(messagebin, keybin, plaintextBinary, keyBinary);
   
   //Perform initial Permuation
   initPermutation(plaintextBinary, initPlainTextPermutation);
@@ -45,7 +57,24 @@ int main(){
   //Perform final permutation
   finalPermutation(encodedBlock, finalcipher);
   
+  cout << "Final ciphertext: " << endl;
+  for(int i=0; i<64; i++) {
+    cout << finalcipher[i];
+  }
+  cout << endl;
+  
   return 0;
+}
+
+void putInArray(string message, string key, int messageArr[], int keyArr[]) {
+  for(int i=0; i<64; i++) {
+    if(message[i] != ' ') {
+      messageArr[i] = int(message[i])-48;
+    }
+    if(key[i] != ' ') {
+      keyArr[i] = int(message[i])-48;
+    }
+  }
 }
 
 void initPermutation(int input[], int output[]) {
@@ -251,12 +280,6 @@ void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
   int previousLeft[32], previousRight[32], currentLeft[32], currentRight[32], expandRight[48];
   splitPlaintext(message, previousLeft, previousRight);
   
-  // //prime cycles
-  // for(int i=0; i<32; i++) {
-  //   cycleLeft[i] = left[i];
-  //   cycleRight[i] = right[i];
-  // }
-  
   for(int i=0; i<16; i++) {
     //left
     for(int k=0; k<32; k++) {
@@ -273,6 +296,11 @@ void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
     for(int k=0; k<32; k++) {
       previousRight[k] = currentRight[k];
     }
+  }
+  
+  for(int i=0; i<32; i++){
+    ciphertext[i] = currentRight[i];
+    ciphertext[i+32] = currentLeft[i];
   }
   
 }
