@@ -17,6 +17,7 @@ void splitPlaintext(int input[], int left[], int right[]);
 void expand(int original[], int expanded[]);
 void exclusiveorkey(int message[], int key[]);
 void exclusiveorleft(int message[], int key[]);
+void fpermute(int input[], int output[]);
 void substitute(int input[], int result[]);
 int getRow(int array[]);
 int getCol(int array[]);
@@ -30,6 +31,7 @@ int main(){
   int keyBinary[64] = {0,0,0,1,0,0,1,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,1,0,1,1,1,1,0,0,1,1,0,0,1,1,0,1,1,1,0,1,1,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,1,0,0,0,1};
   int subKeys[16][48];
   int encodedBlock[64];
+  int finalcipher[64];
   
   //Perform initial Permuation
   initPermutation(plaintextBinary, initPlainTextPermutation);
@@ -41,6 +43,7 @@ int main(){
   encodeBlock(initPlainTextPermutation, subKeys, encodedBlock);
   
   //Perform final permutation
+  finalPermutation(encodedBlock, finalcipher);
   
   return 0;
 }
@@ -245,32 +248,38 @@ void permute2Table(int input[], int permute[]) {
 }
 
 void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
-  int left[32], right[32], templeft[32], expandright[48], finalright[32];
+  int left[32], right[32], templeft[32], expandright[48], tempright[32], finalright[32];
   splitPlaintext(message, left, right);
+  
+  for(int i=0; i<32; i++){
+    finalright[i] = right[i];
+  }
   
   for(int i=0; i<16; i++) {
     //get left
     for(int k=0; k<32; k++) {
       templeft[k] = left[k];
-      left[k] = right[k];
+      tempright[k] = finalright[k];
+      left[k] = finalright[k];
     }
     
     //get right
-    expand(right, expandright);
+    expand(tempright, expandright);
     exclusiveorkey(expandright, keys[i]);
-    substitute(expandright, finalright);
-    cout << "input:" << endl;
-    for(int i = 0; i<32; i++) {
-      cout << expandright[i];
-    }
-    cout << endl;
+    substitute(expandright, tempright);
+    fpermute(tempright, finalright);
     exclusiveorleft(finalright, templeft);
   }
   
   for(int i = 0; i<32; i++) {
-    ciphertext[i] = left[i];
-    ciphertext[i+32] = right[i];
+    ciphertext[i] = finalright[i];
+    ciphertext[i+32] = left[i];
   }
+  
+  for(int i = 0; i<64; i++) {
+    cout << ciphertext[i]; 
+  }
+  cout << endl;
 }
 
 void expand(int original[], int expanded[]) {
@@ -346,6 +355,43 @@ void exclusiveorleft(int message[], int key[]){
   }
 }
 
+void fpermute(int input[], int output[]) {
+    output[0]=input[15];
+    output[1]=input[6];
+    output[2]=input[19];
+    output[3]=input[20];
+    output[4]=input[28];
+    output[5]=input[11];
+    output[6]=input[27];
+    output[7]=input[16];
+    output[8]=input[0];
+    output[9]=input[14];
+    output[10]=input[22];
+    output[11]=input[25];
+    output[12]=input[4];
+    output[13]=input[17];
+    output[14]=input[30];
+    output[15]=input[9];
+    output[16]=input[1];
+    output[17]=input[7];
+    output[18]=input[23];
+    output[19]=input[13];
+    output[20]=input[31];
+    output[21]=input[26];
+    output[22]=input[2];
+    output[23]=input[8];
+    output[24]=input[18];
+    output[25]=input[12];
+    output[26]=input[29];
+    output[27]=input[5];
+    output[28]=input[21];
+    output[29]=input[10];
+    output[30]=input[3];
+    output[31]=input[24];
+
+
+}
+
 void substitute(int input[], int result[]) {
   int sub1[6], sub2[6], sub3[6], sub4[6], sub5[6], sub6[6], sub7[6], sub8[6];
   int row, col, number;
@@ -418,31 +464,31 @@ void substitute(int input[], int result[]) {
   }
   
   for(int i=6; i<12; i++) {
-    sub1[i-6] = input[i];
+    sub2[i-6] = input[i];
   }
  
    for(int i=12; i<18; i++) {
-      sub1[i-12] = input[i];
+      sub3[i-12] = input[i];
     }
    
    for(int i=18; i<24; i++) {
-      sub1[i-18] = input[i];
+      sub4[i-18] = input[i];
     }
    
    for(int i=24; i<30; i++) {
-      sub1[i-24] = input[i];
+      sub5[i-24] = input[i];
     }
    
    for(int i=30; i<36; i++) {
-      sub1[i-30] = input[i];
+      sub6[i-30] = input[i];
     }
    
    for(int i=36; i<42; i++) {
-      sub1[i-36] = input[i];
+      sub7[i-36] = input[i];
     }
    
    for(int i=42; i<48; i++) {
-      sub1[i-42] = input[i];
+      sub8[i-42] = input[i];
     }
    
    row = getRow(sub1);
@@ -450,38 +496,38 @@ void substitute(int input[], int result[]) {
    number = s1[row][col];
    addToResult(result, number, 0);
    
-   row = getRow(sub1);
-   col = getCol(sub1);
+   row = getRow(sub2);
+   col = getCol(sub2);
    number = s2[row][col];
    addToResult(result, number, 4);
    
-   row = getRow(sub1);
-   col = getCol(sub1);
+   row = getRow(sub3);
+   col = getCol(sub3);
    number = s3[row][col];
    addToResult(result, number, 8);
    
-   row = getRow(sub1);
-   col = getCol(sub1);
+   row = getRow(sub4);
+   col = getCol(sub4);
    number = s4[row][col];
    addToResult(result, number, 12);
    
-   row = getRow(sub1);
-   col = getCol(sub1);
+   row = getRow(sub5);
+   col = getCol(sub5);
    number = s5[row][col];
    addToResult(result, number, 16);
    
-   row = getRow(sub1);
-   col = getCol(sub1);
+   row = getRow(sub6);
+   col = getCol(sub6);
    number = s6[row][col];
    addToResult(result, number, 20);
    
-   row = getRow(sub1);
-   col = getCol(sub1);
+   row = getRow(sub7);
+   col = getCol(sub7);
    number = s7[row][col];
    addToResult(result, number, 24);
    
-   row = getRow(sub1);
-   col = getCol(sub1);
+   row = getRow(sub8);
+   col = getCol(sub8);
    number = s8[row][col];
    addToResult(result, number, 28);
 }
@@ -532,4 +578,71 @@ void splitPlaintext(int input[], int left[], int right[]){
   for(int i = 32; i < 64; i++)
     right[i-32] = input[i];
   
+}
+
+void finalPermutation(int input[], int output[]){
+  output[0]=input[];
+  output[1]=input[];
+  output[2]=input[];
+  output[3]=input[];
+  output[4]=input[];
+  output[5]=input[];
+  output[6]=input[];
+  output[7]=input[];
+  output[8]=input[];
+  output[9]=input[];
+  output[10]=input[];
+  output[11]=input[];
+  output[12]=input[];
+  output[13]=input[];
+  output[14]=input[];
+  output[15]=input[];
+  output[16]=input[];
+  output[17]=input[];
+  output[18]=input[];
+  output[19]=input[];
+  output[20]=input[];
+  output[21]=input[];
+  output[22]=input[];
+  output[23]=input[];
+  output[24]=input[];
+  output[25]=input[];
+  output[26]=input[];
+  output[27]=input[];
+  output[28]=input[];
+  output[29]=input[];
+  output[30]=input[];
+  output[31]=input[];
+  output[32]=input[];
+  output[33]=input[];
+  output[34]=input[];
+  output[35]=input[];
+  output[36]=input[];
+  output[37]=input[];
+  output[38]=input[];
+  output[39]=input[];
+  output[40]=input[];
+  output[41]=input[];
+  output[42]=input[];
+  output[43]=input[];
+  output[44]=input[];
+  output[45]=input[];
+  output[46]=input[];
+  output[47]=input[];
+  output[48]=input[];
+  output[49]=input[];
+  output[50]=input[];
+  output[51]=input[];
+  output[52]=input[];
+  output[53]=input[];
+  output[54]=input[];
+  output[55]=input[];
+  output[56]=input[];
+  output[57]=input[];
+  output[58]=input[];
+  output[59]=input[];
+  output[60]=input[];
+  output[61]=input[];
+  output[62]=input[];
+  output[63]=input[];
 }
