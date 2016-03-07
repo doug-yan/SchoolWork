@@ -8,34 +8,36 @@ void initPermutation(int input[], int output[]);
 void getSubkeys(int originalKey[], int subkeys[][48]);
 void permutationChoice1(int input[], int output[]);
 void splitKPlus(int key[], int left[], int right[]);
+void leftShift(int array[]);
 void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightResults[][28]);
 void permute2Table(int input[], int output[]);
 void permutationChoice2(int left[][28], int right[][28], int subkeys[][48]);
+void encodeBlock(int message[], int keys[][48], int ciphertext[]);
 void splitPlaintext(int input[], int left[], int right[]);
 void finalPermutation(int input[], int output[]);
-void leftShift(int array[]);
+
 
 int main(){
-  int plaintextBinary[64];
+  int plaintextBinary[64] = {0,0,0,0,0,0,0,1,0,0,1,0,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,0,0,1,1,1,1,0,0,0,1,0,0,1,1,0,1,0,1,0,1,1,1,1,0,0,1,1,0,1,1,1,1,0,1,1,1,1,};
   int initPlainTextPermutation[64];
   int keyBinary[64] = {0,0,0,1,0,0,1,1,0,0,1,1,0,1,0,0,0,1,0,1,0,1,1,1,0,1,1,1,1,0,0,1,1,0,0,1,1,0,1,1,1,0,1,1,1,1,0,0,1,1,0,1,1,1,1,1,1,1,1,1,0,0,0,1};
-  int keyPlus[56];
   int subKeys[16][48];
+  int encodedBlock[64];
   
   //Perform initial Permuation
   initPermutation(plaintextBinary, initPlainTextPermutation);
   
   //Get subkeys
   getSubkeys(keyBinary, subKeys);
-  
+
   //Encode block
+  encodeBlock(initPlainTextPermutation, subKeys, encodedBlock);
   
   //Perform final permutation
   
   return 0;
 }
 
-//Algorithm courtesy of programmersheaven.com
 void initPermutation(int input[], int output[]) {
   int k=58;
   for(int i=0; i<32; i++) {
@@ -104,6 +106,14 @@ void splitKPlus(int key[], int left[], int right[]) {
     right[i-28] = key[i];
 }
 
+void leftShift(int array[]) {
+  int temp=array[0];
+  for(int i=1; i<28; i++) {
+    array[i-1]=array[i];
+  }
+  array[27] = temp;
+}
+
 void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightResults[][28]){
   for(int i=0; i<2; i++) {
     leftShift(left);
@@ -153,56 +163,26 @@ void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightR
 }
 
 void permutationChoice2(int left[][28], int right[][28], int subkeys[][48]){
-    //combine cn and dn
     int tempsubkey[16][56];
-    int beforePermute[16][48];
+    int fullPermute[16][56];
     
+    //combine cn and dn
     for(int i=0; i<16; i++) {
       for(int k=0; k<28; k++) {
         tempsubkey[i][k] = left[i][k];
         tempsubkey[i][k+28] = right[i][k];
       }
     }
-
-    for(int i=0; i<16; i++) {
-      for(int k=0; k<7; k++) {
-        beforePermute[i][k] = tempsubkey[i][k];
-      }
-      
-      for(int k=8; k<15; k++) {
-        beforePermute[i][k-1] = tempsubkey[i][k];
-      }
-      
-      for(int k=16; k<23; k++) {
-        beforePermute[i][k-2] = tempsubkey[i][k];
-      }
-      
-      for(int k=24; k<31; k++) {
-        beforePermute[i][k-3] = tempsubkey[i][k];
-      }
-      
-      for(int k=32; k<39; k++) {
-        beforePermute[i][k-4] = tempsubkey[i][k];
-      }
-      
-      for(int k=40; k<47; k++) {
-        beforePermute[i][k-5] = tempsubkey[i][k];
-      }
-      
-      for(int k=48; k<55; k++) {
-        beforePermute[i][k-6] = tempsubkey[i][k];
-      }
-    }
     
-    for(int i=0; i<16; i++) {
-      permute2Table(beforePermute[i], subkeys[i]);
-    }
+    //use permutation table
+    for(int i=0; i<16; i++)
+      permute2Table(tempsubkey[i], fullPermute[i]);
     
+    //get first 48 bits for key
     for(int i=0; i<16; i++) {
       for(int k=0; k<48; k++) {
-        cout << subkeys[i][k];
+        subkeys[i][k] = fullPermute[i][k];
       }
-      cout << endl;
     }
 }
 
@@ -255,8 +235,9 @@ void permute2Table(int input[], int permute[]) {
     permute[45]=input[35];
     permute[46]=input[28];
     permute[47]=input[31];
+}
 
-
+void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
 
 }
 
@@ -267,12 +248,4 @@ void splitPlaintext(int input[], int left[], int right[]){
   for(int i = 32; i < 64; i++)
     right[i-32] = input[i];
   
-}
-
-void leftShift(int array[]) {
-  int temp=array[0];
-  for(int i=1; i<28; i++) {
-    array[i-1]=array[i];
-  }
-  array[27] = temp;
 }
