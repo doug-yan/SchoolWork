@@ -74,9 +74,12 @@ void decrypt(string ciphertext){
 		cout << "Testing key size of multiple of " << i << endl;
 		cout << "Decryption: ";
 		for(int k=0; k<size; k++){
-			place = getAlphabetPlace(ciphertext[k]);
-			newplace = getNewPlaceDecrypt(place, i);
-			deciphered[k] = alphabet[newplace];
+			if(ciphertext[k] == ' ') deciphered[k] = ' ';
+			else {
+				place = getAlphabetPlace(ciphertext[k]);
+				newplace = getNewPlaceDecrypt(place, i);
+				deciphered[k] = alphabet[newplace];
+			}
 		}
 		cout << deciphered << endl;
 	}
