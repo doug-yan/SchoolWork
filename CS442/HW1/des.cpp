@@ -45,11 +45,6 @@ int main(){
   //Perform final permutation
   finalPermutation(encodedBlock, finalcipher);
   
-  cout << "final cipher text" << endl;
-  for(int i=0; i<64; i++)
-    cout << finalcipher[i];
-  cout << endl;
-  
   return 0;
 }
 
@@ -253,38 +248,33 @@ void permute2Table(int input[], int permute[]) {
 }
 
 void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
-  int left[32], right[32], templeft[32], expandright[48], tempright[32], finalright[32];
-  splitPlaintext(message, left, right);
+  int previousLeft[32], previousRight[32], currentLeft[32], currentRight[32], expandRight[48];
+  splitPlaintext(message, previousLeft, previousRight);
   
-  for(int i=0; i<32; i++){
-    finalright[i] = right[i];
-  }
+  // //prime cycles
+  // for(int i=0; i<32; i++) {
+  //   cycleLeft[i] = left[i];
+  //   cycleRight[i] = right[i];
+  // }
   
   for(int i=0; i<16; i++) {
-    //get left
+    //left
     for(int k=0; k<32; k++) {
-      templeft[k] = left[k];
-      tempright[k] = finalright[k];
-      left[k] = finalright[k];
+      previousLeft[i] = currentLeft[i];
+      currentLeft[k] = previousRight[k];
     }
     
-    //get right
-    expand(tempright, expandright);
-    exclusiveorkey(expandright, keys[i]);
-    substitute(expandright, tempright);
-    fpermute(tempright, finalright);
-    exclusiveorleft(finalright, templeft);
+    //right
+    expand(previousRight, expandRight);
+    exclusiveorkey(expandRight, keys[i]);
+    substitute(expandRight, previousRight);
+    fpermute(previousRight, currentRight);
+    exclusiveorleft(currentRight, previousLeft);
+    for(int k=0; k<32; k++) {
+      previousRight[k] = currentRight[k];
+    }
   }
   
-  for(int i = 0; i<32; i++) {
-    ciphertext[i] = finalright[i];
-    ciphertext[i+32] = left[i];
-  }
-  
-  for(int i = 0; i<64; i++) {
-    cout << ciphertext[i]; 
-  }
-  cout << endl;
 }
 
 void expand(int original[], int expanded[]) {
