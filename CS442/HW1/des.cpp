@@ -11,13 +11,17 @@ void finalPermutation(int input[], int output[]);
 
 int main(){
   int plaintextBinary[64];
+  int initPlainTextPermutation[64];
   int keyBinary[64];
+  int keyPlus[56];
   
   //Perform initial Permuation
+  initPermutation(plaintextBinary, initPlainTextPermutation);
   
   //Get subkeys
     //Perform permutation choice 1
-    
+    permutationChoice1(keyBinary, keyPlus);
+      
     //Split into C0 and D0
     
     //Perform shifts
@@ -30,7 +34,7 @@ int main(){
 }
 
 //Algorithm courtesy of programmersheaven.com
-void initPermutation(int input, int output[]) {
+void initPermutation(int input[], int output[]) {
   int k=58;
   for(int i=0; i<32; i++) {
     output[i]=input[k-1];
@@ -62,7 +66,7 @@ void permutationChoice1(int input[], int output[]){
   }
   
   k=63;
-  for(int i=28; i<56; i++){
+  for(int i=28; i<52; i++){
     output[i]=input[k-1];
     if(k-8>0)
       k-=8;
@@ -78,7 +82,7 @@ void permutationChoice1(int input[], int output[]){
 }
 
 void splitPlaintext(int input[], int left[], int right[]){
-  for(int i = 0; i << 32; i++)
+  for(int i = 0; i < 32; i++)
     left[i] = input[i];
     
   for(int i = 32; i < 64; i++)
