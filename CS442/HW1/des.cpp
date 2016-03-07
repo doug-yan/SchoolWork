@@ -15,8 +15,12 @@ void permutationChoice2(int left[][28], int right[][28], int subkeys[][48]);
 void encodeBlock(int message[], int keys[][48], int ciphertext[]);
 void splitPlaintext(int input[], int left[], int right[]);
 void expand(int original[], int expanded[]);
-void exclusiveor(int message[], int key[]);
-void substitute(int input[]);
+void exclusiveorkey(int message[], int key[]);
+void exclusiveorleft(int message[], int key[]);
+void substitute(int input[], int result[]);
+int getRow(int array[]);
+int getCol(int array[]);
+void addToResult(int array[], int decimalNum, int counter);
 void finalPermutation(int input[], int output[]);
 
 
@@ -242,7 +246,7 @@ void permute2Table(int input[], int permute[]) {
 
 void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
   int left[32], right[32], templeft[32], expandright[48], finalright[32];
-  splitPlainText(message, left, right);
+  splitPlaintext(message, left, right);
   
   for(int i=0; i<16; i++) {
     //get left
@@ -253,9 +257,20 @@ void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
     
     //get right
     expand(right, expandright);
-    exclusiveor(expandright, keys[i]);
-    substitute(expandright, finalright[32]);
+    exclusiveorkey(expandright, keys[i]);
+    substitute(expandright, finalright);
+    exclusiveorleft(finalright, templeft);
   }
+  
+  for(int i = 0; i<32; i++) {
+    ciphertext[i] = left[i];
+    ciphertext[i+32] = right[i];
+  }
+  
+  for(int i=0; i<64; i++) {
+    cout << ciphertext[i];
+  }
+  cout << endl;
 }
 
 void expand(int original[], int expanded[]) {
@@ -309,10 +324,21 @@ void expand(int original[], int expanded[]) {
     expanded[47]=original[0];
 }
 
-void exclusiveor(int message[], int key[]) {
+void exclusiveorkey(int message[], int key[]) {
   for(int i=0; i<48; i++){
     if(message[i] != key[i]) {
-      message[i] = 1
+      message[i] = 1;
+    }
+    
+    else
+      message[i] = 0;
+  }
+}
+
+void exclusiveorleft(int message[], int key[]){
+    for(int i=0; i<32; i++){
+    if(message[i] != key[i]) {
+      message[i] = 1;
     }
     
     else
@@ -322,7 +348,7 @@ void exclusiveor(int message[], int key[]) {
 
 void substitute(int input[], int result[]) {
   int sub1[6], sub2[6], sub3[6], sub4[6], sub5[6], sub6[6], sub7[6], sub8[6];
-  int row, col;
+  int row, col, number;
   int s1[4][16]=
   {
        14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7,
@@ -395,31 +421,108 @@ void substitute(int input[], int result[]) {
     sub1[i-6] = input[i];
   }
  
- for(int i=12; i<18; i++) {
-    sub1[i-12] = input[i];
-  }
- 
- for(int i=18; i<24; i++) {
-    sub1[i-18] = input[i];
-  }
- 
- for(int i=24; i<30; i++) {
-    sub1[i-24] = input[i];
-  }
- 
- for(int i=30; i<36; i++) {
-    sub1[i-30] = input[i];
-  }
- 
- for(int i=36; i<42; i++) {
-    sub1[i-36] = input[i];
-  }
- 
- for(int i=42; i<48; i++) {
-    sub1[i-42] = input[i];
-  }
- 
- 
+   for(int i=12; i<18; i++) {
+      sub1[i-12] = input[i];
+    }
+   
+   for(int i=18; i<24; i++) {
+      sub1[i-18] = input[i];
+    }
+   
+   for(int i=24; i<30; i++) {
+      sub1[i-24] = input[i];
+    }
+   
+   for(int i=30; i<36; i++) {
+      sub1[i-30] = input[i];
+    }
+   
+   for(int i=36; i<42; i++) {
+      sub1[i-36] = input[i];
+    }
+   
+   for(int i=42; i<48; i++) {
+      sub1[i-42] = input[i];
+    }
+   
+   row = getRow(sub1);
+   col = getCol(sub1);
+   number = s1[row][col];
+   addToResult(result, number, 0);
+   
+   row = getRow(sub1);
+   col = getCol(sub1);
+   number = s2[row][col];
+   addToResult(result, number, 4);
+   
+   row = getRow(sub1);
+   col = getCol(sub1);
+   number = s3[row][col];
+   addToResult(result, number, 8);
+   
+   row = getRow(sub1);
+   col = getCol(sub1);
+   number = s4[row][col];
+   addToResult(result, number, 12);
+   
+   row = getRow(sub1);
+   col = getCol(sub1);
+   number = s5[row][col];
+   addToResult(result, number, 16);
+   
+   row = getRow(sub1);
+   col = getCol(sub1);
+   number = s6[row][col];
+   addToResult(result, number, 20);
+   
+   row = getRow(sub1);
+   col = getCol(sub1);
+   number = s7[row][col];
+   addToResult(result, number, 24);
+   
+   row = getRow(sub1);
+   col = getCol(sub1);
+   number = s8[row][col];
+   addToResult(result, number, 28);
+}
+
+int getRow(int array[]) {
+  int result = 0;
+  if(array[0] == 1)
+    result+=2;
+  if(array[5] == 1)
+    result++;
+  return result;
+}
+
+int getCol(int array[]) {
+  int result = 0;
+  if(array[1] == 1)
+    result+=8;
+  if(array[2] == 1)
+    result+=4;
+  if(array[3] == 1)
+    result+=2;
+  if(array[4] == 1)
+    result++;
+  return result;
+}
+
+void addToResult(int array[], int decimalNum, int counter) {
+  int a,b,c,d;
+  d = decimalNum%2;
+  decimalNum/=2;
+  c = decimalNum%2;
+  decimalNum/=2;
+  b = decimalNum%2;
+  decimalNum/=2;
+  a = decimalNum%2;
+  decimalNum/=2;
+  
+  array[counter] = a;
+  array[counter+1] = b;
+  array[counter+2] = c;
+  array[counter+3] = d;
 }
 
 void splitPlaintext(int input[], int left[], int right[]){
