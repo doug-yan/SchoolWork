@@ -10,15 +10,10 @@ int main(){
   cout << "Enter 1 for encryption, 2 for decription, 0 for quit: ";
   cin >> input;
   
-  while(input!=0){
-    if(input==1) {
-      cout << "Enter plaintext: ";
-      cin >> noskipws >> plaintext;
-      cout << plaintext << endl;
-    }
-      
-    cout << "Enter 1 for encryption, 2 for decription, 0 for quit: ";
-    cin >> input;
-  }
+  cout << "Enter plaintext: ";
+  getline(cin, plaintext);
+  cout << plaintext << endl;
+  
+
   return 0;
 }
