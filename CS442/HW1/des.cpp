@@ -8,8 +8,11 @@ void initPermutation(int input[], int output[]);
 void getSubkeys(int originalKey[], int subkeys[][48]);
 void permutationChoice1(int input[], int output[]);
 void splitKPlus(int key[], int left[], int right[]);
+void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightResults[][28]);
+void permutationChoice2(int left[], int right[], int subkeys[][48]);
 void splitPlaintext(int input[], int left[], int right[]);
 void finalPermutation(int input[], int output[]);
+void leftShift(int array[]);
 
 int main(){
   int plaintextBinary[64];
@@ -62,7 +65,8 @@ void getSubkeys(int originalKey[], int subkeys[][48]) {
   
   permutationChoice1(originalKey, kplus);
   splitKPlus(kplus, c0, d0);
-
+  shiftSubKeyParts(c0, d0, leftsubkeys, rightsubkeys);
+  permutationChoice2(leftsubkeys, rightsubkeys, subkeys);
 }
 
 void permutationChoice1(int input[], int output[]){
@@ -99,6 +103,58 @@ void splitKPlus(int key[], int left[], int right[]) {
     right[i-28] = key[i];
 }
 
+void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightResults[][28]){
+  for(int i=0; i<2; i++) {
+    leftShift(left);
+    leftShift(right);
+    for(int k=0; k<28; k++) {
+      leftResults[i][k] = left[k];
+      rightResults[i][k] = right[k];
+    }
+  }
+  
+  for(int i=2; i<8; i++) {
+    leftShift(left);
+    leftShift(left);
+    leftShift(right);
+    leftShift(right);
+    for(int k=0; k<28; k++) {
+      leftResults[i][k] = left[k];
+      rightResults[i][k] = right[k];
+    }
+  }
+  
+  leftShift(left);
+  leftShift(right);
+  for(int k=0; k<28; k++) {
+    leftResults[8][k] = left[k];
+    rightResults[8][k] = right[k];
+  }
+  
+  for(int i=9; i<15; i++) {
+    leftShift(left);
+    leftShift(left);
+    leftShift(right);
+    leftShift(right);
+    
+    for(int k=0; k<28; k++) {
+      leftResults[i][k] = left[k];
+      rightResults[i][k] = right[k];
+    }
+  }
+  
+  leftShift(left);
+  leftShift(right);
+  for(int k=0; k<28; k++) {
+    leftResults[15][k] = left[k];
+    rightResults[15][k] = right[k];
+  }
+}
+
+void permutationChoice2(int left[], int right[], int subkeys[][48]){
+    
+}
+
 void splitPlaintext(int input[], int left[], int right[]){
   for(int i = 0; i < 32; i++)
     left[i] = input[i];
@@ -106,4 +162,12 @@ void splitPlaintext(int input[], int left[], int right[]){
   for(int i = 32; i < 64; i++)
     right[i-32] = input[i];
   
+}
+
+void leftShift(int array[]) {
+  int temp=array[0];
+  for(int i=1; i<28; i++) {
+    array[i-1]=array[i];
+  }
+  array[27] = temp;
 }
