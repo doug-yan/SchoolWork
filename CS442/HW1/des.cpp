@@ -7,6 +7,7 @@ using namespace std;
 void initPermutation(int input[], int output[]);
 void getSubkeys(int originalKey[], int subkeys[][48]);
 void permutationChoice1(int input[], int output[]);
+void splitKPlus(int key[], int left[], int right[]);
 void splitPlaintext(int input[], int left[], int right[]);
 void finalPermutation(int input[], int output[]);
 
@@ -60,6 +61,8 @@ void getSubkeys(int originalKey[], int subkeys[][48]) {
   int rightsubkeys[16][28];
   
   permutationChoice1(originalKey, kplus);
+  splitKPlus(kplus, c0, d0);
+
 }
 
 void permutationChoice1(int input[], int output[]){
@@ -86,6 +89,14 @@ void permutationChoice1(int input[], int output[]){
     output[i]=input[k-1];
     k-=8;
   }
+}
+
+void splitKPlus(int key[], int left[], int right[]) {
+  for(int i=0; i<28; i++)
+    left[i] = key[i];
+  
+  for(int i=28; i<56; i++)
+    right[i-28] = key[i];
 }
 
 void splitPlaintext(int input[], int left[], int right[]){
