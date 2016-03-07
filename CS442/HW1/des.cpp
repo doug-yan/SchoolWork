@@ -14,6 +14,9 @@ void permute2Table(int input[], int output[]);
 void permutationChoice2(int left[][28], int right[][28], int subkeys[][48]);
 void encodeBlock(int message[], int keys[][48], int ciphertext[]);
 void splitPlaintext(int input[], int left[], int right[]);
+void expand(int original[], int expanded[]);
+void exclusiveor(int message[], int key[]);
+void substitute(int input[]);
 void finalPermutation(int input[], int output[]);
 
 
@@ -238,7 +241,87 @@ void permute2Table(int input[], int permute[]) {
 }
 
 void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
+  int left[32], right[32], templeft[32], expandright[48], finalright[32];
+  splitPlainText(message, left, right);
+  
+  for(int i=0; i<16; i++) {
+    //get left
+    for(int k=0; k<32; k++) {
+      templeft[k] = left[k];
+      left[k] = right[k];
+    }
+    
+    //get right
+    expand(right, expandright);
+    exclusiveor(expandright, keys[i]);
+    substitute(expandright);
+  }
+}
 
+void expand(int original[], int expanded[]) {
+    expanded[0]=original[31];
+    expanded[1]=original[0];
+    expanded[2]=original[1];
+    expanded[3]=original[2];
+    expanded[4]=original[3];
+    expanded[5]=original[4];
+    expanded[6]=original[3];
+    expanded[7]=original[4];
+    expanded[8]=original[5];
+    expanded[9]=original[6];
+    expanded[10]=original[7];
+    expanded[11]=original[8];
+    expanded[12]=original[7];
+    expanded[13]=original[8];
+    expanded[14]=original[9];
+    expanded[15]=original[10];
+    expanded[16]=original[11];
+    expanded[17]=original[12];
+    expanded[18]=original[11];
+    expanded[19]=original[12];
+    expanded[20]=original[13];
+    expanded[21]=original[14];
+    expanded[22]=original[15];
+    expanded[23]=original[16];
+    expanded[24]=original[15];
+    expanded[25]=original[16];
+    expanded[26]=original[17];
+    expanded[27]=original[18];
+    expanded[28]=original[19];
+    expanded[29]=original[20];
+    expanded[30]=original[19];
+    expanded[31]=original[20];
+    expanded[32]=original[21];
+    expanded[33]=original[22];
+    expanded[34]=original[23];
+    expanded[35]=original[24];
+    expanded[36]=original[23];
+    expanded[37]=original[24];
+    expanded[38]=original[25];
+    expanded[39]=original[26];
+    expanded[40]=original[27];
+    expanded[41]=original[28];
+    expanded[42]=original[27];
+    expanded[43]=original[28];
+    expanded[44]=original[29];
+    expanded[45]=original[30];
+    expanded[46]=original[31];
+    expanded[47]=original[0];
+}
+
+void exclusiveor(int message[], int key[]) {
+  for(int i=0; i<48; i++){
+    if(message[i] != key[i]) {
+      message[i] = 1
+    }
+    
+    else
+      message[i] = 0;
+  }
+}
+
+void substitute(int input[]) {
+  
 }
 
 void splitPlaintext(int input[], int left[], int right[]){
