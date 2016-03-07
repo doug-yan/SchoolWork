@@ -45,6 +45,11 @@ int main(){
   //Perform final permutation
   finalPermutation(encodedBlock, finalcipher);
   
+  cout << "final cipher text" << endl;
+  for(int i=0; i<64; i++)
+    cout << finalcipher[i];
+  cout << endl;
+  
   return 0;
 }
 
