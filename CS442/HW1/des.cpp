@@ -9,7 +9,8 @@ void getSubkeys(int originalKey[], int subkeys[][48]);
 void permutationChoice1(int input[], int output[]);
 void splitKPlus(int key[], int left[], int right[]);
 void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightResults[][28]);
-void permutationChoice2(int left[], int right[], int subkeys[][48]);
+void permute2Table(int input[], int output[]);
+void permutationChoice2(int left[][28], int right[][28], int subkeys[][48]);
 void splitPlaintext(int input[], int left[], int right[]);
 void finalPermutation(int input[], int output[]);
 void leftShift(int array[]);
@@ -151,8 +152,112 @@ void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightR
   }
 }
 
-void permutationChoice2(int left[], int right[], int subkeys[][48]){
+void permutationChoice2(int left[][28], int right[][28], int subkeys[][48]){
+    //combine cn and dn
+    int tempsubkey[16][56];
+    int beforePermute[16][48];
     
+    for(int i=0; i<16; i++) {
+      for(int k=0; k<28; k++) {
+        tempsubkey[i][k] = left[i][k];
+        tempsubkey[i][k+28] = right[i][k];
+      }
+    }
+
+    for(int i=0; i<16; i++) {
+      for(int k=0; k<7; k++) {
+        beforePermute[i][k] = tempsubkey[i][k];
+      }
+      
+      for(int k=8; k<15; k++) {
+        beforePermute[i][k-1] = tempsubkey[i][k];
+      }
+      
+      for(int k=16; k<23; k++) {
+        beforePermute[i][k-2] = tempsubkey[i][k];
+      }
+      
+      for(int k=24; k<31; k++) {
+        beforePermute[i][k-3] = tempsubkey[i][k];
+      }
+      
+      for(int k=32; k<39; k++) {
+        beforePermute[i][k-4] = tempsubkey[i][k];
+      }
+      
+      for(int k=40; k<47; k++) {
+        beforePermute[i][k-5] = tempsubkey[i][k];
+      }
+      
+      for(int k=48; k<55; k++) {
+        beforePermute[i][k-6] = tempsubkey[i][k];
+      }
+    }
+    
+    for(int i=0; i<16; i++) {
+      permute2Table(beforePermute[i], subkeys[i]);
+    }
+    
+    for(int i=0; i<16; i++) {
+      for(int k=0; k<48; k++) {
+        cout << subkeys[i][k];
+      }
+      cout << endl;
+    }
+}
+
+void permute2Table(int input[], int permute[]) {
+    permute[0]=input[13];
+    permute[1]=input[16];
+    permute[2]=input[10];
+    permute[3]=input[23];
+    permute[4]=input[0];
+    permute[5]=input[4];
+    permute[6]=input[2];
+    permute[7]=input[27];
+    permute[8]=input[14];
+    permute[9]=input[5];
+    permute[10]=input[20];
+    permute[11]=input[9];
+    permute[12]=input[22];
+    permute[13]=input[18];
+    permute[14]=input[11];
+    permute[15]=input[3];
+    permute[16]=input[25];
+    permute[17]=input[7];
+    permute[18]=input[15];
+    permute[19]=input[6];
+    permute[20]=input[26];
+    permute[21]=input[19];
+    permute[22]=input[12];
+    permute[23]=input[1];
+    permute[24]=input[40];
+    permute[25]=input[51];
+    permute[26]=input[30];
+    permute[27]=input[36];
+    permute[28]=input[46];
+    permute[29]=input[54];
+    permute[30]=input[29];
+    permute[31]=input[39];
+    permute[32]=input[50];
+    permute[33]=input[46];
+    permute[34]=input[32];
+    permute[35]=input[47];
+    permute[36]=input[43];
+    permute[37]=input[48];
+    permute[38]=input[38];
+    permute[39]=input[55];
+    permute[40]=input[33];
+    permute[41]=input[52];
+    permute[42]=input[45];
+    permute[43]=input[41];
+    permute[44]=input[49];
+    permute[45]=input[35];
+    permute[46]=input[28];
+    permute[47]=input[31];
+
+
+
 }
 
 void splitPlaintext(int input[], int left[], int right[]){
