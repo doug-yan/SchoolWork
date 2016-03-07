@@ -259,6 +259,11 @@ void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
     expand(right, expandright);
     exclusiveorkey(expandright, keys[i]);
     substitute(expandright, finalright);
+    cout << "input:" << endl;
+    for(int i = 0; i<32; i++) {
+      cout << expandright[i];
+    }
+    cout << endl;
     exclusiveorleft(finalright, templeft);
   }
   
@@ -266,11 +271,6 @@ void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
     ciphertext[i] = left[i];
     ciphertext[i+32] = right[i];
   }
-  
-  for(int i=0; i<64; i++) {
-    cout << ciphertext[i];
-  }
-  cout << endl;
 }
 
 void expand(int original[], int expanded[]) {
