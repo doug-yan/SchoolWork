@@ -5,6 +5,7 @@
 using namespace std;
 
 void initPermutation(int input[], int output[]);
+void splitPlaintext(int input[], int left[], int right[]);
 void finalPermutation(int input[], int output[]);
 
 int main(){
@@ -79,6 +80,15 @@ void initPermutation(int input[], int output[]) {
   output[61] = input[22];
   output[62] = input[14];
   output[63] = input[6];
+}
+
+void splitPlaintext(int input[], int left[], int right[]){
+  for(int i = 0; i << 32; i++)
+    left[i] = input[i];
+    
+  for(int i = 32; i < 64; i++)
+    right[i-32] = input[i];
+  
 }
 
 void finalPermutation(int input[], int output[]) {
