@@ -66,6 +66,7 @@ int main(){
   return 0;
 }
 
+//Put input into array
 void putInArray(string message, string key, int messageArr[], int keyArr[]) {
   for(int i=0; i<64; i++) {
     if(message[i] != ' ') {
@@ -77,6 +78,7 @@ void putInArray(string message, string key, int messageArr[], int keyArr[]) {
   }
 }
 
+//Perform initial permutation according to table
 void initPermutation(int input[], int output[]) {
   int k=58;
   for(int i=0; i<32; i++) {
@@ -105,9 +107,16 @@ void getSubkeys(int originalKey[], int subkeys[][48]) {
   int leftsubkeys[16][28];
   int rightsubkeys[16][28];
   
+  //Perform permutation choice 1 according to PC1 table
   permutationChoice1(originalKey, kplus);
+  
+  //Get c0 and d0
   splitKPlus(kplus, c0, d0);
+  
+  //Perform left shifts
   shiftSubKeyParts(c0, d0, leftsubkeys, rightsubkeys);
+  
+  //Perform permutation choice 2 according to PC2 table
   permutationChoice2(leftsubkeys, rightsubkeys, subkeys);
 }
 
@@ -145,6 +154,8 @@ void splitKPlus(int key[], int left[], int right[]) {
     right[i-28] = key[i];
 }
 
+//Must create own becuase not actually using bits so can't
+//use bitwise operations
 void leftShift(int array[]) {
   int temp=array[0];
   for(int i=1; i<28; i++) {
@@ -153,7 +164,9 @@ void leftShift(int array[]) {
   array[27] = temp;
 }
 
+//Perform left shifts
 void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightResults[][28]){
+  //First two rounds get one shift apiece
   for(int i=0; i<2; i++) {
     leftShift(left);
     leftShift(right);
@@ -163,6 +176,7 @@ void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightR
     }
   }
   
+  //Third round to eighth round gets two shifts
   for(int i=2; i<8; i++) {
     leftShift(left);
     leftShift(left);
@@ -174,6 +188,7 @@ void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightR
     }
   }
   
+  //Ninth round gets one shift
   leftShift(left);
   leftShift(right);
   for(int k=0; k<28; k++) {
@@ -181,6 +196,7 @@ void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightR
     rightResults[8][k] = right[k];
   }
   
+  //Tenth round to fifteenth round gets two shifts
   for(int i=9; i<15; i++) {
     leftShift(left);
     leftShift(left);
@@ -193,6 +209,7 @@ void shiftSubKeyParts(int left[], int right[], int leftResults[][28], int rightR
     }
   }
   
+  //Final, sixteenth round gets one shift
   leftShift(left);
   leftShift(right);
   for(int k=0; k<28; k++) {
@@ -288,16 +305,28 @@ void encodeBlock(int message[], int keys[][48], int ciphertext[]) {
     }
     
     //right
+    //expand previousRight (32 bits) to expandRight (48 bits)
     expand(previousRight, expandRight);
+    
+    //Xor expandright with current key
     exclusiveorkey(expandRight, keys[i]);
+    
+    //Use substitution tables to decrease expandRight(48 bits) to (32 bits)
     substitute(expandRight, previousRight);
+    
+    //Use permute table for f function
     fpermute(previousRight, currentRight);
+    
+    //Xor with the previous left 
     exclusiveorleft(currentRight, previousLeft);
+    
+    //Prime previousRight to be equal to the currentRight
     for(int k=0; k<32; k++) {
       previousRight[k] = currentRight[k];
     }
   }
   
+  //Copy ciphertext in R16L16 order
   for(int i=0; i<32; i++){
     ciphertext[i] = currentRight[i];
     ciphertext[i+32] = currentLeft[i];
@@ -356,6 +385,8 @@ void expand(int original[], int expanded[]) {
     expanded[47]=original[0];
 }
 
+//Perform XOR with key. Need to write funciton because
+//not using bitwise operations. 
 void exclusiveorkey(int message[], int key[]) {
   for(int i=0; i<48; i++){
     if(message[i] != key[i]) {
@@ -418,6 +449,8 @@ void fpermute(int input[], int output[]) {
 void substitute(int input[], int result[]) {
   int sub1[6], sub2[6], sub3[6], sub4[6], sub5[6], sub6[6], sub7[6], sub8[6];
   int row, col, number;
+  
+  //Substitutuion tables
   int s1[4][16]=
   {
        14,4,13,1,2,15,11,8,3,10,6,12,5,9,0,7,

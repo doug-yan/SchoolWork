@@ -51,6 +51,7 @@ void encrypt(string plaintext, int key) {
 	size = getsize(plaintext);
 
 	for(int i=0; i<size; i++) {
+	  //Ignore non character symbols
 		if(plaintext[i] != ' ' && isalpha(plaintext[i]) ){
 			place = getAlphabetPlace(plaintext[i]);
 			newplace = getNewPlaceEncrypt(place, key);
